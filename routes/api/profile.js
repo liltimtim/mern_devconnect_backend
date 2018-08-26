@@ -22,9 +22,12 @@ router.get(
   async (req, res) => {
     const errors = {};
     try {
-      let profile = await Profile.findOne({ user: req.user.id });
+      let profile = await Profile.findOne({ user: req.user.id }).populate(
+        "user",
+        ["name", "avatar"]
+      );
       if (!profile) {
-        errors.noprofile = "Ther is no profile for this user.";
+        errors.noprofile = "There is no profile for this user.";
         return res.status(404).json(errors);
       }
       res.json(profile);
@@ -33,6 +36,89 @@ router.get(
     }
   }
 );
+
+/**
+ * @route GET api/profile/:handle
+ * @desc Get profile by handle name
+ * @access Public
+ */
+router.get("/handle/:handle", async (req, res) => {
+  const { handle } = req.params;
+  const errors = {};
+  try {
+    let profile = await Profile.findOne({ handle }).populate("user", [
+      "name",
+      "avatar"
+    ]);
+    if (!profile) {
+      errors.noprofile = "There is no profile for this user";
+      return res.status(404).json(errors);
+    }
+    return res.json(profile);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+});
+
+/**
+ * @route GET api/profile/all
+ * @desc Get all profiles
+ * @access Private
+ */
+router.get("/all", async (req, res) => {
+  try {
+    let profiles = await Profile.find().populate("user", ["name", "avatar"]);
+    return res.json(profiles);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+});
+
+/**
+ * @route GET api/profile/:id
+ * @desc Get profile by its id
+ * @access Private
+ */
+router.get("/id/:id", async (req, res) => {
+  const { id } = req.params;
+  const errors = {};
+  try {
+    let profile = await Profile.findById(id).populate("user", [
+      "name",
+      "avatar"
+    ]);
+    if (!profile) {
+      errors.noprofile = "There is no profile for this user";
+      return res.status(404).json(errors);
+    }
+    return res.json(profile);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+});
+
+/**
+ * @route GET api/profile/user/:id
+ * @desc Get profile by its user's id
+ * @access Private
+ */
+router.get("/user/:id", async (req, res) => {
+  const { id } = req.params;
+  const errors = {};
+  try {
+    let profile = await Profile.findOne({ user: id }).populate("user", [
+      "name",
+      "avatar"
+    ]);
+    if (!profile) {
+      errors.noprofile = "Ther is no profile for this user";
+      return res.status(404).json(errors);
+    }
+    return res.json(profile);
+  } catch (error) {
+    return res.status(500).json({ error });
+  }
+});
 
 /**
  * @route POST api/profile
@@ -83,6 +169,7 @@ router.post(
           { $set: profileFields },
           { new: true }
         );
+        return res.json(updatedProfile);
       } else {
         // Create
 
@@ -92,7 +179,7 @@ router.post(
         });
         if (handleExistsProfile) {
           errors.handle = `${req.body.handle} handle already exists`;
-          res.status(400).json(errors);
+          return res.status(400).json(errors);
         }
 
         // Save the profile
