@@ -5,11 +5,16 @@ import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
 import { withRouter } from "react-router-dom";
 class Navbar extends Component {
+  /**
+   *
+   * @param {React.SyntheticEvent} e onClick synthentic event
+   */
   onLogoutClick(e) {
+    e.preventDefault();
     this.props.logoutUser(this.props.history);
   }
 
-  renderAuthenticatedBar() {
+  renderAuthenticatedBar(user) {
     return (
       <div className="collapse navbar-collapse" id="mobile-nav">
         <ul className="navbar-nav mr-auto">
@@ -24,9 +29,15 @@ class Navbar extends Component {
           <li className="nav-item">
             <a
               className="nav-link"
-              href="#"
+              href="#logout"
               onClick={this.onLogoutClick.bind(this)}
             >
+              <img
+                className="rounded-circle"
+                src={user.avatar}
+                style={{ width: "25px", marginRight: "5px" }}
+                alt=""
+              />{" "}
               Logout
             </a>
           </li>
@@ -63,7 +74,7 @@ class Navbar extends Component {
   }
 
   render() {
-    const { isAuthenticated } = this.props.auth;
+    const { isAuthenticated, user } = this.props.auth;
     return (
       <nav className="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
         <div className="container">
@@ -79,13 +90,17 @@ class Navbar extends Component {
             <span className="navbar-toggler-icon" />
           </button>
           {isAuthenticated
-            ? this.renderAuthenticatedBar()
+            ? this.renderAuthenticatedBar(user)
             : this.renderUnauthenticatedBar()}
         </div>
       </nav>
     );
   }
 }
+
+Navbar.propTypes = {
+  auth: PropTypes.object.isRequired
+};
 
 const mapStateToProps = state => {
   return {

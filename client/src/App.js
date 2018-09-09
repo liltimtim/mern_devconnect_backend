@@ -12,7 +12,7 @@ import Login from "./components/auth/Login";
 import store from "./store";
 import "./App.css";
 import { setupAxiosDefault, setAuthToken } from "./utils/setAuthToken";
-import { setCurrentUser } from "./actions/authActions";
+import { setCurrentUser, logoutUser } from "./actions/authActions";
 // check for token
 if (localStorage.token) {
   // set auth token
@@ -21,13 +21,20 @@ if (localStorage.token) {
   const decoded = jwtdecode(localStorage.token);
   // call the store method dispatch
   store.dispatch(setCurrentUser(decoded));
+
+  // check for expired token
+  const currenTime = Date.now() / 1000;
+  if (decoded.exp < currenTime) {
+    // logout the user
+    store.dispatch(logoutUser(null));
+
+    // redirect
+    window.location.href = "/login";
+  }
 }
 setupAxiosDefault();
 
 class App extends Component {
-  constructor() {
-    super();
-  }
   render() {
     return (
       <Provider store={store}>
