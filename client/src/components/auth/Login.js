@@ -1,30 +1,48 @@
 import React, { Component } from "react";
-
+import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { loginUser } from "../../actions/authActions";
 class Login extends Component {
   constructor() {
     super();
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      errors: {}
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  componentWillReceiveProps(props) {
+    if (props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+    if (props.errors) {
+      this.setState({ errors: props.errors });
+    }
+  }
+
   /**
    * Event triggered whenever any form input value changes
-   * @param {React.SyntheticEvent} e
+   * @param {React.SyntheticEvent} e the form event
    */
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
   /**
    * Called when the form is submitted
-   * @param {React.SyntheticEvent} e
+   * @param {React.SyntheticEvent} e the form
    */
   onSubmit(e) {
     e.preventDefault();
+    const { history } = this.props;
+    const login = {
+      email: this.state.email,
+      password: this.state.password
+    };
+    this.props.loginUser(login, history);
   }
 
   render() {
@@ -42,7 +60,7 @@ class Login extends Component {
                   <input
                     type="text"
                     className="form-control form-control-lg"
-                    placeholder="First and Last Name"
+                    placeholder="email@address.com"
                     name="email"
                     value={this.state.email}
                     onChange={this.onChange}
@@ -52,7 +70,7 @@ class Login extends Component {
                   <input
                     type="password"
                     className="form-control form-control-lg"
-                    placeholder="Email Address"
+                    placeholder="Password"
                     name="password"
                     value={this.state.password}
                     onChange={this.onChange}
@@ -67,5 +85,13 @@ class Login extends Component {
     );
   }
 }
-
-export default Login;
+const mapStateToProps = state => {
+  return {
+    auth: state.auth,
+    errors: state.errors
+  };
+};
+export default connect(
+  mapStateToProps,
+  { loginUser }
+)(withRouter(Login));

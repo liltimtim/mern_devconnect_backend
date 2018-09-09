@@ -93,7 +93,7 @@ router.delete(
       if (post.user.toString() !== req.user.id) {
         let err = new Error();
         err.message = "User not authorized to delete this post";
-        return res.status(401).json({ error: err });
+        return res.status(403).json({ error: err });
       }
 
       // delete

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import classnames from "classnames";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import { registerUser } from "../../actions/authActions";
 class Register extends Component {
   constructor() {
@@ -18,6 +19,13 @@ class Register extends Component {
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
+
+  componentWillReceiveProps(props) {
+    if (props.errors) {
+      this.setState({ errors: props.errors });
+    }
+  }
+
   /**
    *
    * @param {object} e event of the text field input
@@ -28,13 +36,14 @@ class Register extends Component {
 
   onSubmit(e) {
     e.preventDefault();
+    const { history } = this.props;
     const newUser = {
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
       confirmPassword: this.state.confirmPassword
     };
-    this.props.registerUser(newUser);
+    this.props.registerUser(newUser, history);
   }
 
   render() {
@@ -122,16 +131,18 @@ class Register extends Component {
 
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => {
   return {
-    auth: state.auth
+    auth: state.auth,
+    errors: state.errors
   };
 };
 
 export default connect(
   mapStateToProps,
   { registerUser }
-)(Register);
+)(withRouter(Register));

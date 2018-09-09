@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Provider } from "react-redux";
+import jwtdecode from "jwt-decode";
+
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Landing from "./components/layout/Landing";
@@ -9,8 +11,23 @@ import Login from "./components/auth/Login";
 
 import store from "./store";
 import "./App.css";
+import { setupAxiosDefault, setAuthToken } from "./utils/setAuthToken";
+import { setCurrentUser } from "./actions/authActions";
+// check for token
+if (localStorage.token) {
+  // set auth token
+  setAuthToken(localStorage.token);
+  // get user info and check current info
+  const decoded = jwtdecode(localStorage.token);
+  // call the store method dispatch
+  store.dispatch(setCurrentUser(decoded));
+}
+setupAxiosDefault();
 
 class App extends Component {
+  constructor() {
+    super();
+  }
   render() {
     return (
       <Provider store={store}>
