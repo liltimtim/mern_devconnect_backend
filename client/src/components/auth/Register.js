@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { registerUser } from "../../actions/authActions";
 class Register extends Component {
   constructor() {
     super();
@@ -31,11 +34,12 @@ class Register extends Component {
       password: this.state.password,
       confirmPassword: this.state.confirmPassword
     };
-    console.log(newUser);
+    this.props.registerUser(newUser);
   }
 
   render() {
     const { errors } = this.state;
+    const { user } = this.props.auth;
     return (
       <div className="register">
         <div className="container">
@@ -116,4 +120,18 @@ class Register extends Component {
   }
 }
 
-export default Register;
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => {
+  return {
+    auth: state.auth
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(Register);

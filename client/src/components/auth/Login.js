@@ -33,8 +33,10 @@ class Login extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Sign Up</h1>
-              <p className="lead text-center">Create your DevConnect Account</p>
+              <h1 className="display-4 text-center">Login</h1>
+              <p className="lead text-center">
+                Login to your DevConnect Account
+              </p>
               <form noValidate onSubmit={this.onSubmit}>
                 <div className="form-group">
                   <input
