@@ -5,7 +5,7 @@ import jwt_decode from "jwt-decode";
 
 export const registerUser = (data, history) => async dispatch => {
   try {
-    let response = await axios.post("/users/register", data);
+    let response = await axios.post("/api/users/register", data);
     history.push("/login");
   } catch (error) {
     dispatch(dispatchErrors(error.response.data));
@@ -14,7 +14,7 @@ export const registerUser = (data, history) => async dispatch => {
 
 export const loginUser = (data, history) => async dispatch => {
   try {
-    let response = await axios.post("/users/login", data);
+    let response = await axios.post("/api/users/login", data);
     const { token } = response.data;
     dispatch(setCurrentUser(response.data));
     // set token to local storage
