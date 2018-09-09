@@ -16,6 +16,10 @@ const whichCompose = () => {
   }
 };
 
-const store = createStore(reducers, {}, whichCompose());
+const store = createStore(
+  reducers,
+  {},
+  compose(applyMiddleware(...middleware))
+);
 
 export default store;
